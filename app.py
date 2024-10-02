@@ -12,7 +12,7 @@ app = dash.Dash(__name__)
 
 #---------------------------------------------------------------
 
-df = pd.read_excel(r"C:\Users\User\Downloads\Covid 19 dashboard with Instruction to Deployment-20241001\Materials\data\coviddata.xlsx")
+df = pd.read_excel(r'C:\Users\User\Downloads\Covid 19 dashboard with Instruction to Deployment-20241001\Materials\data\coviddata.xlsx')
 
 dff = df.groupby('countriesAndTerritories', as_index=False)[['deaths','cases']].sum()
 print (dff[:5])
