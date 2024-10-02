@@ -8,8 +8,9 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 
-app = dash.Dash(__name__)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']  # Adding external CSS for layout
 
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 #---------------------------------------------------------------
 
 df = pd.read_excel(r'C:\Users\User\Downloads\Covid 19 dashboard with Instruction to Deployment-20241001\Materials\data\coviddata.xlsx')
@@ -19,12 +20,18 @@ print (dff[:5])
 #---------------------------------------------------------------
 app.layout = html.Div([
     html.Div([
+        html.H1('Covid-19 Cases Analysis', style={'textAlign': 'center','fontFamily': 'Lucida Bright, monospace'}),
+        html.H3('Data Table displaying cases and death reported per Country',style={'textAlign': 'center','fontFamily': 'Lucida Bright, monospace'})
+]),
+    html.Div([
         dash_table.DataTable(
             id='datatable_id',
             data=dff.to_dict('records'),
             columns=[
                 {"name": i, "id": i, "deletable": False, "selectable": False} for i in dff.columns
             ],
+             style_header={'backgroundColor': 'rgb(30, 30, 30)','color': 'white'
+            },
             editable=False,
             filter_action="native",
             sort_action="native",
@@ -43,11 +50,11 @@ app.layout = html.Div([
             # virtualization=False,
             style_cell_conditional=[
                 {'if': {'column_id': 'countriesAndTerritories'},
-                 'width': '40%', 'textAlign': 'left'},
+                 'width': '40%', 'textAlign': 'center'},
                 {'if': {'column_id': 'deaths'},
-                 'width': '30%', 'textAlign': 'left'},
+                 'width': '30%', 'textAlign': 'center'},
                 {'if': {'column_id': 'cases'},
-                 'width': '30%', 'textAlign': 'left'},
+                 'width': '30%', 'textAlign': 'center'},
             ],
         ),
     ],className='row'),
@@ -80,17 +87,16 @@ app.layout = html.Div([
     ],className='row'),
 
     html.Div([
-        html.Div([
-            dcc.Graph(id='linechart'),
-        ],className='six columns'),
+       html.Div([
+            html.H3('Line-Chart on Reported Cases and Deaths', style={'textAlign': 'center','fontFamily': 'Lucida Bright, monospace'}),
+            dcc.Graph(id='linechart',style={'width': '100%'})
+        ], className='six columns', style={'padding': '10px'}), 
 
         html.Div([
-            dcc.Graph(id='piechart'),
-        ],className='six columns'),
-
-    ],className='row'),
-
-
+            html.H3('Pie-Chart on Reported Cases and Deaths', style={'textAlign': 'center','fontFamily': 'Lucida Bright, monospace'}),
+            dcc.Graph(id='piechart',style={'width': '100%'})
+        ], className='six columns', style={'padding': '10px'})  
+    ], className='row')  
 ])
 
 #------------------------------------------------------------------
@@ -123,7 +129,7 @@ def update_data(chosen_rows,piedropval,linedropval):
     #because original df has all the complete dates
     df_line = df[df['countriesAndTerritories'].isin(list_chosen_countries)]
 
-    line_chart = px.line(
+    line_chart = px.area(
             data_frame=df_line,
             x='dateRep',
             y=linedropval,
